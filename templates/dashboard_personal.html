@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}داشبورد شخصی | تراز{% endblock %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+{% endblock %}
+
+{% block extra_main %}
+    <div data-required-account="personal">
+        <div class="app">
+            <main class="main">                
+                <div class="page">
+                    <section class="welcome">
+                        <div>
+                            <span class="eyebrow">داشبورد شخصی</span>
+                            <h1>سلام <span data-user-name>{{ request.user.name|default:request.user.username }}</span> 👋</h1>
+                            <p>یک نگاه سریع به وضعیت مالی شخصی شما.</p>
+                        </div>
+                        <a class="btn" href="{% url 'personal_transactions' %}">＋ ثبت تراکنش</a>
+                    </section>
+
+                    <section class="grid kpi-grid">
+                        <article class="kpi">
+                            <span class="muted">موجودی</span>
+                            <h2>{{ balance|floatformat:0 }} تومان</h2>
+                            <small class="positive">وضعیت جاری</small>
+                        </article>
+                        <article class="kpi">
+                            <span class="muted">درآمد</span>
+                            <h2>{{ total_income|floatformat:0 }} تومان</h2>
+                            <small class="positive">ثبت‌شده</small>
+                        </article>
+                        <article class="kpi">
+                            <span class="muted">هزینه</span>
+                            <h2>{{ total_expense|floatformat:0 }} تومان</h2>
+                            <small class="negative">ثبت‌شده</small>
+                        </article>
+                        <article class="kpi">
+                            <span class="muted">نوع حساب</span>
+                            <h2>{{ request.user.get_account_type_display }}</h2>
+                            <small class="positive">فعال</small>
+                        </article>
+                    </section>
+
+                    <section class="grid section-grid">
+                        <article class="panel">
+                            <div class="panel-head">
+                                <div>
+                                    <h2>روند درآمد و هزینه</h2>
+                                    <span class="muted">مقایسه روند ماه‌های اخیر</span>
+                                </div>
+                            </div>
+                            <div class="chart-box">
+                                <canvas id="incomeExpenseChart"></canvas>
+                            </div>
+                        </article>
+
+                        <article class="panel">
+                            <div class="panel-head">
+                                <div>
+                                    <h2>ترکیب هزینه‌ها</h2>
+                                    <span class="muted">بر اساس بودجه جاری</span>
+                                </div>
+                            </div>
+                            <div class="donut-box">
+                                <canvas id="expenseChart"></canvas>
+                            </div>
+                        </article>
+                    </section>
+
+                    <article class="panel">
+                        <div class="panel-head">
+                            <h2>تراکنش‌های اخیر</h2>
+                            <a class="text-link" href="{% url 'personal_transactions' %}">مشاهده همه</a>
+                        </div>
+                        <div class="table-wrap">
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>عنوان</th>
+                                        <th>دسته</th><th>مبلغ</th>
+                                        <th>تاریخ</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for tx in recent_transactions %}
+                                        <tr>
+                                            <td>{{ tx.title }}</td>
+                                            <td>{{ tx.category.name|default:"بدون دسته" }}</td>
+                                            <td class="{% if tx.transaction_type == 'income' %}positive{% else %}negative{% endif %}">
+                                                {{ tx.amount|floatformat:0 }} تومان
+                                            </td>
+                                            <td>{{ tx.date }}</td>
+                                        </tr>
+                                    {% empty %}
+                                        <tr>
+                                            <td colspan="4" class="muted" style="text-align: center;">تراکنشی ثبت نشده است.</td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </article>
+                    
+
+                    <section class="panel">
+                        <div class="panel-head">
+                            <div>
+                                <h2>اهداف مالی</h2>
+                                <span class="muted">پیشرفت اهداف خود را دنبال کنید.</span>
+                            </div>
+                            <a class="btn secondary small" href="{% url 'personal_goals' %}">مدیریت اهداف</a>
+                        </div>
+                        <div class="goals-list" id="dashboard-goals">
+                            {% for goal in goals %}
+                            <div class="goal-item" style="margin-bottom: 1rem;">
+                                <div style="display: flex; justify-content: space-between; margin-bottom: 0.25rem;">
+                                    <span>{{ goal.title }}</span>
+                                    <span>{{ goal.current_amount|floatformat:0 }} / {{ goal.target_amount|floatformat:0 }} تومان</span>
+                                </div>
+                                <div style="background: var(--border-color); border-radius: 4px; height: 8px; overflow: hidden;">
+                                    <div style="background: var(--primary-color); width: {{ goal.current_amount }}%; height: 100%;"></div>
+                                </div>
+                            </div>
+                            {% empty %}
+                            <p class="muted">هدف مالی فعالی وجود ندارد.</p>
+                            {% endfor %}
+                        </div>
+                    </section>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+{% endblock %}
+{% block extra_js %}
+    <script src="{% static 'js/chart.umd.min.js' %}"></script>
+    <script src="{% static 'js/app.js' %}"></script>
+
+    {{ expense_labels|json_script:"expense-labels" }}
+    {{ expense_data|json_script:"expense-data" }}
+    {{ months_labels|json_script:"months-labels" }}
+    {{ income_trend_data|json_script:"income-trend" }}
+    {{ expense_trend_data|json_script:"expense-trend" }}
+    {{ registered_income|json_script:"reg-income" }}
+    {{ top_expense_category|json_script:"top-exp" }}
+    {{ savings_rate|json_script:"sav-rate" }}
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // خواندن داده‌ها از تگ‌های json_script
+            const expenseLabels = JSON.parse(document.getElementById('expense-labels').textContent);
+            const expenseData = JSON.parse(document.getElementById('expense-data').textContent);
+            const monthsLabels = JSON.parse(document.getElementById('months-labels').textContent);
+            const incomeTrend = JSON.parse(document.getElementById('income-trend').textContent);
+            const expenseTrend = JSON.parse(document.getElementById('expense-trend').textContent);
+
+            // ۱. رسم نمودار دایره‌ای (ترکیب هزینه‌ها)
+            const expenseCtx = document.getElementById('expenseChart');
+            if (expenseCtx) {
+                // پاکسازی بوم در صورت وجود نمودار قبلی
+                let existingChart = Chart.getChart(expenseCtx);
+                if (existingChart) existingChart.destroy();
+
+                new Chart(expenseCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: expenseLabels.length ? expenseLabels : ['بدون هزینه'],
+                        datasets: [{
+                            data: expenseData.length ? expenseData : [1],
+                            backgroundColor: [
+                                '#4f46e5', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+
+            // ۲. رسم نمودار خطی (روند درآمد و هزینه)
+            const incomeExpenseCtx = document.getElementById('incomeExpenseChart');
+            if (incomeExpenseCtx) {
+                let existingLineChart = Chart.getChart(incomeExpenseCtx);
+                if (existingLineChart) existingLineChart.destroy();
+
+                new Chart(incomeExpenseCtx, {
+                    type: 'line',
+                    data: {
+                        labels: monthsLabels.length ? monthsLabels : ['فروردین', 'اردیبهشت', 'خرداد', 'تیر', 'مرداد', 'شهریور'],
+                        datasets: [
+                            {
+                                label: 'درآمد',
+                                data: incomeTrend,
+                                borderColor: '#10b981',
+                                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                                tension: 0.3,
+                                fill: true
+                            },
+                            {
+                                label: 'هزینه',
+                                data: expenseTrend,
+                                borderColor: '#ef4444',
+                                backgroundColor: 'rgba(239, 68, 68, 0.1)',
+                                tension: 0.3,
+                                fill: true
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom'
+                            }
+                        }
+                    }
+                });
+            }
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const insightsContent = document.getElementById('insights-content');
+            
+            if (insightsContent) {
+                try {
+                    const regIncome = JSON.parse(document.getElementById('reg-income').textContent);
+                    const topExp = JSON.parse(document.getElementById('top-exp').textContent);
+                    const savRate = JSON.parse(document.getElementById('sav-rate').textContent);
+
+                    // ساختن محتوا به صورت کارت‌های کوچک یا متن‌های خطی
+                    // اینجا من یک ساختار ساده متنی می‌سازم، شما می‌توانید طبق استایل خودتان کارت بسازید
+                    insightsContent.innerHTML = `
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <p class="text-xs text-green-600">درآمد ثبت شده</p>
+                                <p class="text-lg font-bold">${regIncome.toLocaleString()} تومان</p>
+                            </div>
+                            <div class="bg-red-50 p-4 rounded-lg">
+                                <p class="text-xs text-red-600">بیشترین هزینه در دسته</p>
+                                <p class="text-lg font-bold">${topExp}</p>
+                            </div>
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <p class="text-xs text-blue-600">نرخ پس‌انداز ماهانه</p>
+                                <p class="text-lg font-bold">${savRate}%</p>
+                            </div>
+                        </div>
+                    `;
+                    insightsContent.classList.remove('italic', 'text-gray-600');
+                } catch (e) {
+                    console.error("Error loading insights:", e);
+                    insightsContent.innerHTML = "خطا در بارگذاری بینش‌ها.";
+                }
+            }
+        });
+        
+    </script>
+{% endblock %}

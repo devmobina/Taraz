@@ -1,0 +1,45 @@
+<aside class="sidebar closed" id="sidebar">
+    <ul class="nav">
+        <li><a href="{% url 'personal_dashboard' %}">🏠 داشبورد</a></li>
+        <li><a href="{% url 'personal_goals' %}">🎯 اهداف</a></li>
+        <li><a href="{% url 'personal_transactions' %}">💰 تراکنش‌ها</a></li>
+        <li><a href="{% url 'personal_reports' %}">📊 گزارشات</a></li>
+    </ul>
+    <div class="sidebar-footer">
+        <div class="user-mini">
+            <div class="avatar" data-user-initial>{{ request.user.name|default:request.user.username|slice:":1" }}</div>
+            <span>
+                <b data-user-name>{{ request.user.name|default:request.user.username }}</b>
+                <small class="muted" data-user-email>{{ request.user.email }}</small>
+            </span>
+        </div>
+    </div>
+</aside>
+
+<header class="topbar">
+    <div class="top-left">
+        <div class="brand">
+            <div class="brand-mark">ت</div>
+            <span class="brand-text">تراز</span>
+            <button class="menu-btn" id="menu-btn">=</button>
+        </div>
+        <form method="GET" action="{% url 'personal_transactions' %}" style="right: 65px;" class="search">
+            <span class="search-icon">⌕</span>
+            <input type="search" name="q" value="{{ request.GET.q|default:'' }}" placeholder="جستجو..." aria-label="جستجو">
+        </form>
+        <div class="mobile">
+            <a href="{% url 'personal_dashboard' %}">🏠 داشبورد</a>
+            <a href="{% url 'personal_goals' %}">🎯 اهداف</a>
+            <a href="{% url 'personal_transactions' %}">💰 تراکنش‌ها</a>
+            <a href="{% url 'personal_reports' %}">📊 گزارشات</a>
+        </div>
+    </div>
+
+    <div class="actions">
+        {% if request.user.profile_image %}
+            <img src="{{ request.user.profile_image.url }}" alt="پروفایل" style="width: 70px; height: 70px; border-radius: 50%; object-fit: cover;">
+        {% else %}
+            <div class="avatar" title="پروفایل" data-user-initial>{{ request.user.name|default:request.user.username|slice:":1" }}</div>
+        {% endif %}
+    </div>
+</header>

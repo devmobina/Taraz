@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}اهداف | تراز{% endblock %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+{% endblock %}
+
+{% block extra_main %}
+    <div class="app">
+        <main class="main">
+            <div class="page">
+                
+                <section class="welcome">
+                    <div>
+                        <span class="eyebrow">برنامه‌ریزی شخصی</span>
+                        <h1>اهداف مالی شخصی</h1>
+                        <p>برای هدف‌های مهم زندگی برنامه مالی بسازید و پیشرفت آن‌ها را ببینید.</p>
+                    </div>
+                    <button class="btn" data-open-modal="goal-modal">＋ هدف جدید</button>
+                </section>
+
+                <section class="panel">
+                    <div class="goals-list" id="goals-list">
+                        {% if goals %}
+                            {% for goal in goals %}
+                                <div class="goal-card" style="padding: 16px; border: 1px solid #2f5378; border-radius: 8px; margin-bottom: 12px; background: #fff;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                                        <h3 style="margin: 0; font-size: 16px;">{{ goal.title }}</h3>
+                                        <span class="muted" style="font-size: 13px;">{{ goal.current_amount }} از {{ goal.target_amount }} تومان</span>
+                                    </div>
+
+                                    <div style="background: #e9ecef; border-radius: 6px; height: 10px; overflow: hidden;width: 100%;">
+                                        <div style="background: var(--primary-color, #007bff); height: 100%; width: {{ goal.progress_percent }}%;"></div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            <p class="muted" style="text-align: center; padding: 20px;">هنوز هیچ هدف مالی ثبت نشده است.  از دکمه "هدف جدید" استفاده کنید.</p>
+                        {% endif %}
+                    </div>
+                </section>
+
+                <div class="modal-backdrop" id="goal-modal">
+                    <div class="modal">
+                        <div class="panel-head">
+                            <h2>افزودن هدف</h2>
+                            <button class="close" data-close-modal aria-label="بستن">×</button>
+                        </div>
+
+                        <form class="form-grid" id="goal-form" method="POST">
+                            {% csrf_token %}
+                            <div class="field full">
+                                <label for="goal-name">نام هدف</label>
+                                <input id="goal-name" name="name" required placeholder="مثلاً خرید لپ‌تاپ">
+                            </div>
+
+                            <div class="field">
+                                <label for="goal-target">مبلغ هدف</label>
+                                <input id="goal-target" name="target" type="number" min="1" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="goal-saved">مبلغ پس‌اندازشده</label>
+                                <input id="goal-saved" name="saved" type="number" min="0" value="0">
+                            </div>
+
+                            <div class="field full">
+                                <button class="btn" type="submit">ذخیره هدف</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+{% endblock %}
+{% block extra_js %}
+    <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/chart.umd.min.js' %}"></script>
+{% endblock %}

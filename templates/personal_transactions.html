@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}تراکنش‌ها | تراز{% endblock %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+{% endblock %}
+
+{% block extra_main %}
+    <div class="app">
+        <main class="main">
+            <div class="page">
+                
+                <section class="welcome">
+                    <div>
+                        <span class="eyebrow">مدیریت جریان مالی</span>
+                        <h1>تراکنش‌های شخصی</h1>
+                        <p>تمام درآمدها و هزینه‌های شخصی خود را ثبت و مدیریت کنید.</p>
+                    </div>
+                    <button class="btn" data-open-modal="transaction-modal">＋ تراکنش جدید</button>
+                </section>
+
+                <section class="panel">
+                    <!-- فرم واحد برای جستجو و فیلتر نوع تراکنش -->
+                    <form method="GET" class="toolbar">
+                        <input id="transaction-search" class="input" type="search" name="q" value="{{ search_query }}" placeholder="جستجوی عنوان یا دسته...">
+                        
+                        <select class="select" id="transaction-type" name="type">
+                            <option value="all" {% if current_type == 'all' %}selected{% endif %}>همه تراکنش‌ها</option>
+                            <option value="income" {% if current_type == 'income' %}selected{% endif %}>درآمدها</option>
+                            <option value="expense" {% if current_type == 'expense' %}selected{% endif %}>هزینه‌ها</option>
+                        </select>
+
+                        <button type="submit" class="btn" style="padding: 8px 16px; font-size: 14px;">اعمال فیلتر</button>
+                    </form>
+
+                    <div class="table-wrap">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>عنوان</th>
+                                    <th>دسته</th>
+                                    <th>مبلغ</th>
+                                    <th>تاریخ</th>
+                                    <th>عملیات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="transaction-body">
+                                {% for tx in transactions %}
+                                    <tr>
+                                        <td>{{ tx.title }}</td>
+                                        <td>{{ tx.category.name|default:"بدون دسته" }}</td>
+                                        <!-- رنگ سبز برای درآمد (positive) و قرمز برای هزینه (negative) -->
+                                        <td class="{% if tx.transaction_type == 'income' %}positive{% else %}negative{% endif %}">
+                                            {% if tx.transaction_type == 'income' %}+{% else %}-{% endif %}{{ tx.amount|floatformat:0 }} تومان
+                                        </td>
+                                        <td>{{ tx.date }}</td>
+                                        <td>
+                                            <a href="{% url 'delete_transaction' tx.id %}" class="btn" style="padding: 4px 10px; font-size: 12px; background-color: #ef4444; color: white; text-decoration: none;">حذف</a>
+                                        </td>
+                                    </tr>
+                                {% empty %}
+                                    <tr>
+                                        <td colspan="5" style="text-align: center; color: var(--muted);">هیچ تراکنشی یافت نشد.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <div class="modal-backdrop" id="transaction-modal">
+                    <div class="modal">
+                        <div class="panel-head">
+                            <h2>ثبت تراکنش جدید</h2>
+                            <button class="close" data-close-modal aria-label="بستن">×</button>
+                        </div>
+
+                        <form class="form-grid" id="transaction-form" method="POST">
+                            {% csrf_token %}
+                            <div class="field">
+                                <label for="transaction-title">عنوان</label>
+                                <input id="transaction-title" name="title" required placeholder="مثلاً حقوق ماهیانه یا خرید لباس">
+                            </div>
+
+                            <div class="field">
+                                <label for="transaction-category">دسته</label>
+                                <select id="transaction-category" name="category">
+                                    <option value="مواد غذایی">مواد غذایی</option>
+                                    <option value="حمل و نقل">حمل و نقل</option>
+                                    <option value="قبوض">قبوض</option>
+                                    <option value="تفریح">تفریح</option>
+                                    <option value="آموزش">آموزش</option>
+                                    <option value="درآمد">درآمد</option>
+                                    <option value="سایر">سایر</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="transaction-amount">مبلغ</label>
+                                <input id="transaction-amount" name="amount" type="number" min="1" required>
+                            </div>
+
+                            <div class="field">
+                                <label for="transaction-type-input">نوع</label>
+                                <select id="transaction-type-input" name="type">
+                                    <option value="expense">هزینه</option>
+                                    <option value="income">درآمد</option>
+                                </select>
+                            </div>
+
+                            <div class="field">
+                                <label for="transaction-date">تاریخ</label>
+                                <input id="transaction-date" name="date" type="date" required>
+                            </div>
+
+                            <div class="field full">
+                                <button class="btn" type="submit">ثبت تراکنش</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/chart.umd.min.js' %}"></script>
+{% endblock %}

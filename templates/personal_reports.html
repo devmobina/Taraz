@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}گزارش | تراز{% endblock %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+{% endblock %}
+
+{% block extra_main %}
+    <div class="app">
+        <main class="main">
+            <div class="page">
+                
+                <section class="welcome">
+                    <div>
+                        <span class="eyebrow">مرور عملکرد شخصی</span>
+                        <h1>گزارش‌های شخصی</h1>
+                        <p>عملکرد مالی دوره‌های مختلف حساب شخصی را مقایسه کنید.</p>
+                    </div>
+                    <button class="btn" data-toast="گزارش برای خروجی PDF/Excel آماده می‌شود.">⇩ دریافت گزارش</button>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>گزارش ماهانه</h2>
+                            <span class="muted">با تغییر ماه، اعداد و شاخص‌ها به‌روز می‌شوند.</span>
+                        </div>
+                        <form action="" method="GET" id="report-form" style="margin: 0;">
+                            <select class="select" id="report-month" name="month" aria-label="انتخاب ماه" onchange="document.getElementById('report-form').submit()">
+                                {% for m in months %}
+                                    <option value="{{ m.id }}" {% if m.id == selected_month %}selected{% endif %}>
+                                        {{ m.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </form>
+                    </div>
+                </section>
+
+                <section class="grid cards-3">
+                    <article class="kpi">
+                        <span class="muted">درآمد</span>
+                        <h2 data-kpi="report-income">{{ total_income }} تومان</h2>
+                        <small id="report-income-growth" class="positive">مجموع درآمد ماه</small>
+                    </article>
+
+                    <article class="kpi">
+                        <span class="muted">هزینه</span>
+                        <h2 data-kpi="report-expense">{{ total_expense }} تومان</h2>
+                        <small id="report-expense-growth" class="negative">مجموع هزینه ماه</small>
+                    </article>
+
+                    <article class="kpi">
+                        <span class="muted" id="report-result-label">نتیجه</span>
+                        <h2 data-kpi="report-result">{{ net_result }}</h2>
+                        <small class="{% if net_result >= 0 %}positive{% else %}negative{% endif %}">
+                            {% if net_result >= 0 %}سود / مثبت{% else %}کسری / منفی{% endif %}
+                        </small>
+                    </article>
+                </section>
+
+                <section class="panel">
+                    <h2>تحلیل دوره انتخاب‌شده</h2>
+                    <div class="report-summary">
+                        <div class="insight">
+                            در ماه <strong>{{ selected_month }}</strong> سال <strong>{{ selected_year }}</strong>، کل درآمد شما برابر با {{ total_income|floatformat:0 }} و کل هزینه‌هایتان برابر با {{ total_expense|floatformat:0 }} تومان بوده است.
+                        </div>
+                        <div class="insight">
+                            {% if net_result >= 0 %}
+                                وضعیت مالی شما در این دوره مثبت است. تراز به شما پیشنهاد می‌کند بخش مازاد را به اهداف پس‌انداز خود منتقل کنید.
+                            {% else %}
+                                هزینه‌های شما در این دوره بیشتر از درآمدتان بوده است؛ توصیه می‌شود هزینه‌های غیرضروری را مدیریت کنید.
+                            {% endif %}
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+{% endblock %}
+{% block extra_js %}
+    <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/chart.umd.min.js' %}"></script>
+{% endblock %}

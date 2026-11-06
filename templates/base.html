@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="" />
+    <title>{% block title %} {% endblock %}</title>
+    {% block extra_styles %}
+    {% endblock %}
+    <style>
+        /* تعریف رنگ‌ها برای حالت تاریک (پیش‌فرض) */
+        :root.dark-mode {
+            --bg-color: #1a1a1a;
+            --panel-bg: #2d2d2d;
+            --text-color: #ffffff;
+            --accent-color: #3498db;
+        }
+
+        /* تعریف رنگ‌ها برای حالت روشن */
+        :root.light-mode {
+            --bg-color: #f4f4f4;
+            --panel-bg: #ffffff;
+            --text-color: #333333;
+            --accent-color: #2980b9;
+        }
+
+        /* حالا در تمام کدها از این متغیرها استفاده کنید */
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            transition: background-color 0.3s, color 0.3s; /* برای نرم شدن تغییر تم */
+        }
+
+        .panel {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--accent-color);
+        }
+
+        .btn-primary {
+            background-color: var(--accent-color);
+            color: white;
+        }
+    </style>
+</head>
+<body class="{% if request.session.theme == 'light' %}light-mode{% else %}dark-mode{% endif %}">
+    {% include "nav_sidebar.html" %}
+    {% block extra_main %}
+    {% endblock %}
+
+    <script>
+        const data = {
+            user: {
+                name: "{{ request.user.name }}",
+                accountType: "{{ request.user.account_type }}",
+                email: "{{ request.user.email }}"
+            }
+        };
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeSelect = document.getElementById('setting-theme');
+            const body = document.body;
+
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            applyTheme(savedTheme);
+            
+            if (themeSelect) {
+                themeSelect.value = savedTheme;
+            }
+
+            if (themeSelect) {
+                themeSelect.addEventListener('change', (e) => {
+                    const selectedTheme = e.target.value;
+                    applyTheme(selectedTheme);
+                    localStorage.setItem('theme', selectedTheme);
+                });
+            }
+
+            function applyTheme(theme) {
+                if (theme === 'dark') {
+                    body.classList.add('dark-mode');
+                    body.classList.remove('light-mode');
+                } else {
+                    body.classList.add('light-mode');
+                    body.classList.remove('dark-mode');
+                }
+            }
+        });
+    </script>
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            document.documentElement.classList.add(savedTheme + '-mode');
+        })();
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeSelect = document.getElementById('setting-theme');
+            const htmlElement = document.documentElement; // استفاده از html برای اعمال سریع‌تر
+
+            // ۱. اگر در صفحه تنظیمات هستیم، مقدار Select را با تم ذخیره شده هماهنگ کن
+            if (themeSelect) {
+                const savedTheme = localStorage.getItem('theme') || 'dark';
+                themeSelect.value = savedTheme;
+
+                // ۲. گوش دادن به تغییرات در صفحه تنظیمات
+                themeSelect.addEventListener('change', (e) => {
+                    const selectedTheme = e.target.value;
+                    applyTheme(selectedTheme);
+                    localStorage.setItem('theme', selectedTheme);
+                });
+            }
+
+            // تابع اعمال تم روی کل پروژه
+            function applyTheme(theme) {
+                // حذف کلاس‌های قبلی
+                htmlElement.classList.remove('light-mode', 'dark-mode');
+                // اضافه کردن کلاس جدید
+                htmlElement.classList.add(theme + '-mode');
+            }
+        });
+    </script>
+    <script src="{% static 'js/app.js' %}"></script>
+    {% block extra_js %}
+    {% endblock %}
+</body>
+</html>

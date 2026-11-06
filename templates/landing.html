@@ -1,0 +1,403 @@
+{% extends "base_accounts.html" %}
+{% load static %}
+{% block title %}لندینگ | تراز{% endblock %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/landing.css' %}">
+{% endblock %}
+
+{% block extra_main %}
+
+<body>
+    <header class="navbar">
+
+        <div class="logo">
+            <span class="logo-icon">ت</span>
+            <span class="logo-text">تراز</span>
+        </div>
+
+        <nav class="nav-links">
+
+            <a href="#home">خانه</a>
+
+            <a href="#features">امکانات</a>
+
+            <a href="#about">چرا تراز؟</a>
+
+            <a href="#faq">سؤالات متداول</a>
+
+        </nav>
+
+        <div class="buttons">
+
+            <a href="{% url 'login_url' %}" class="login-b">
+                ورود
+            </a>
+
+            <a href="{% url 'register_url' %}" class="register-b">
+                ثبت نام
+            </a>
+
+        </div>
+
+    </header>
+
+    <main>
+
+        <section class="hero" id="home">
+
+            <div class="hero-text">
+
+                <span class="hero-badge">
+                    مدیریت مالی هوشمند
+                </span>
+
+                <h1>
+                    کنترل بهتر پول،
+                    <span>آینده بهتر</span>
+                </h1>
+
+                <p>
+                    تراز به شما کمک می‌کند درآمدها، هزینه‌ها،
+                    بودجه و اهداف مالی خود را ساده‌تر مدیریت کنید
+                    و تصویر واضح‌تری از وضعیت مالی خود داشته باشید.
+                </p>
+
+                <div class="hero-buttons">
+
+                    <a href="{% url 'register_url' %}" class="primary-btn">
+                        شروع کنید
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+
+                    <a href="#features" class="secondary-btn">
+                        آشنایی با امکانات
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <section class="stats">
+
+            <div class="stat-card">
+
+                <i class="fa-solid fa-users"></i>
+
+                <h3>
+                    ۱۲,۸۰۰+
+                </h3>
+
+                <p>
+                    کاربر فعال
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <i class="fa-solid fa-arrow-right-arrow-left"></i>
+
+                <h3>
+                    ۲۴۶,۰۰۰+
+                </h3>
+
+                <p>
+                    تراکنش ثبت‌شده
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <i class="fa-solid fa-heart"></i>
+
+                <h3>
+                    ۹۴٪
+                </h3>
+
+                <p>
+                    رضایت کاربران
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <i class="fa-solid fa-chart-line"></i>
+
+                <h3>
+                    ۲۴/۷
+                </h3>
+
+                <p>
+                    دسترسی به اطلاعات مالی
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- ==================== FEATURES ==================== -->
+
+        <section class="features" id="features">
+
+            <div class="section-heading">
+
+                <span>
+                    امکانات
+                </span>
+
+                <h2>
+                    همه چیز برای مدیریت بهتر مالی
+                </h2>
+
+                <p>
+                    ابزارهایی ساده و کاربردی برای اینکه کنترل بیشتری
+                    روی امور مالی خود داشته باشید.
+                </p>
+
+            </div>
+
+
+            <div class="features-grid">
+                {% for feature in features %}
+                <article class="feature-card">
+
+                    <div class="feature-icon">
+                        <i class="fa-solid fa-wallet">{{ feature.icon_class }}</i>
+                    </div>
+                    <h3>
+                        {{ feature.title }}
+                    </h3>
+
+                    <p>
+                        {{ feature.description }}
+                    </p>
+
+                </article>
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+        <section id="about" class="about-section">
+
+            <div class="about-content">
+
+                <span>
+                    چرا تراز؟
+                </span>
+
+                <h2>
+                    مدیریت مالی نباید پیچیده باشد.
+                </h2>
+
+                <p>
+                    تراز تلاش می‌کند اطلاعات مالی را از حالت
+                    پیچیده و پراکنده خارج کند و آن‌ها را به
+                    اطلاعاتی ساده، قابل فهم و کاربردی تبدیل کند.
+                </p>
+
+
+                <div class="about-points">
+
+                    <div class="about-point">
+
+                        <i class="fa-solid fa-check"></i>
+
+                        <div>
+                            <h4>
+                                ساده و قابل فهم
+                            </h4>
+
+                            <p>
+                                اطلاعات مالی بدون پیچیدگی اضافی نمایش داده می‌شوند.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="about-point">
+
+                        <i class="fa-solid fa-check"></i>
+                        <div>
+                            <h4>
+                                تصمیم‌گیری بهتر
+                            </h4>
+
+                            <p>
+                                اطلاعات مالی به شما کمک می‌کنند تصمیم‌های آگاهانه‌تری بگیرید.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="about-point">
+
+                        <i class="fa-solid fa-check"></i>
+
+                        <div>
+                            <h4>
+                                کنترل بیشتر
+                            </h4>
+
+                            <p>
+                                همیشه دید واضحی از درآمد، هزینه و اهداف خود داشته باشید.
+                            </p>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <section class="faq" id="faq">
+
+            <div class="section-heading">
+
+                <span>
+                    سؤالات متداول
+                </span>
+
+                <h2>
+                    پاسخ پرسش‌های شما
+                </h2>
+
+                <p>
+                    اگر سؤال دیگری دارید، می‌توانید با ما در ارتباط باشید.
+                </p>
+
+            </div>
+
+
+            <div class="faq-list">
+                {% for faq in faqs %}
+                <details>
+                    <summary>
+                        {{ faq.question }}
+                        <i class="fa-solid fa-chevron-down"></i>
+                    </summary>
+
+                    <p>
+                        {{ faq.answer }}
+                    </p>
+
+                </details>
+                {% endfor %}
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="footer">
+
+        <div class="footer-content">
+
+            <div class="footer-column">
+
+                <h3>
+                    ارتباط با ما
+                </h3>
+                {% if settings %}
+                <a href="mailto:{{ settings.email }}">
+                    <i class="fa-solid fa-envelope"></i>
+                    {{ settings.email }}
+                </a>
+                <a href="tel:{{ settings.phone }}">
+                    <i class="fa-solid fa-phone"></i>
+                    {{ settings.phone }}
+                </a>
+                {% else %}
+                <a href="mailto:info@taraz.com">info@taraz.com</a>
+                {% endif %}
+            </div>
+
+
+            <div class="footer-column">
+
+                <h3>
+                    تراز
+                </h3>
+
+                <a href="#home">
+                    خانه
+                </a>
+
+                <a href="#features">
+                    امکانات
+                </a>
+
+                <a href="#about">
+                    چرا تراز؟
+                </a>
+
+                <a href="#faq">
+                    سؤالات متداول
+                </a>
+
+            </div>
+
+
+            <div class="footer-column">
+
+                <h3>
+                    دسترسی سریع
+                </h3>
+
+                <a href="{% url 'login_url' %}">
+                    ورود
+                </a>
+
+                <a href="{% url 'register_url' %}">
+                    ثبت نام
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <div class="footer-bottom">
+
+            <p>
+                © ۱۴۰۵ تمامی حقوق برای تراز محفوظ است.
+            </p>
+
+            <div class="social-links">
+
+                <a href="#" aria-label="Instagram">
+                    <i class="fa-brands fa-instagram"></i>
+                </a>
+
+                <a href="#" aria-label="Telegram">
+                    <i class="fa-brands fa-telegram"></i>
+                </a>
+
+                <a href="#" aria-label="LinkedIn">
+                    <i class="fa-brands fa-linkedin-in"></i>
+                </a>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+</body>
+{% endblock %}

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}تنظیمات | تراز{% endblock %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+    
+{% endblock %}
+
+{% block extra_main %}
+    <body class="app">
+        <main class="main">
+
+            <div class="page">
+                
+<section class="welcome">
+    <div>
+        <span class="eyebrow">شخصی‌سازی</span>
+        <h1>تنظیمات</h1>
+        <p>تنظیمات نمایش و تجربه استفاده از تراز را مدیریت کنید.</p>
+    </div>
+</section>
+
+<section class="panel">
+    <div class="settings-row">
+        <div>
+            <h3>حالت نمایش</h3>
+            <p class="muted">بین حالت روشن و تاریک انتخاب کنید.</p>
+        </div>
+        <select id="setting-theme" class="select">
+            <option value="dark"{% if default_theme == 'dark' %}selected{% endif %}>تاریک</option>
+            <option value="light"{% if default_theme == 'light' %}selected{% endif %}>روشن</option>
+        </select>
+    </div>
+</section>
+
+<section class="panel danger-panel">
+    <h3>داده‌های محلی</h3>
+    <p class="muted">اطلاعات این نسخه آزمایشی در مرورگر شما ذخیره می‌شود.</p>
+    <button class="btn danger" data-toast="برای حذف داده‌ها، پاک‌سازی مرورگر را انجام دهید.">مدیریت داده‌ها</button>
+</section>
+
+            </div>
+        </main>
+    </body>
+
+    <div class="toast" id="toast" role="status"></div>
+{% endblock %}
+
+{% block extra_js %}
+    <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/chart.umd.min.js' %}"></script>
+{% endblock %}

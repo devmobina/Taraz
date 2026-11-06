@@ -1,0 +1,57 @@
+{% extends "base_accounts.html" %}
+{% load static %}
+{% block title %}ورود | تراز{% endblock %}
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+{% endblock %}
+{% block extra_main %}
+    <main>
+
+        <div class="auth">
+            <div class="auth-card">
+                <a class="brand" href="landing.html">
+                    <div class="brand-mark">ت</div>
+                    <b>تراز</b>
+                </a>
+
+                <h1>خوش برگشتی 👋</h1>
+                <p class="muted">برای ورود به حساب خود اطلاعاتت را وارد کن.</p>
+                {% if messages %}
+                    <div class="messages-container">
+                        {% for message in messages %}
+                            <div class="alert alert-{{ message.tags }}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <form class="auth-form" method="POST" id="login-form">
+                    {% csrf_token %}
+                    <div class="field">
+                        <label for="name">نام و نام خانوادگی</label>
+                        <input id="name" type="text" name="username" required placeholder="مثلاً علی احمدی">
+                    </div>
+
+                    <div class="field">
+                        <label for="password">رمز عبور</label>
+                        <input id="password" type="password" name="password" required minlength="8" placeholder="حداقل ۸ کاراکتر">
+                    </div>
+
+                    <label class="check">
+                        <input id="remember" type="checkbox">
+                        مرا به خاطر بسپار
+                    </label>
+
+                    <button class="btn" type="submit">ورود به تراز</button>
+                </form>
+
+                <div class="auth-links">
+                    <a href="{% url 'forgot_password' %}">رمز عبور را فراموش کردم</a>
+                    <a href="{% url 'register_url' %}">ایجاد حساب</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="toast" id="toast"></div>
+    </main>
+{% endblock %}

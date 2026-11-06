@@ -1,0 +1,102 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}بودجه | تراز{% endblock %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'css/app.css' %}">
+{% endblock %}
+
+{% block extra_main %}
+    <div class="app">
+        <main class="main">
+            <div class="page">
+                
+                <section class="welcome">
+                    <div>
+                        <span class="eyebrow">برنامه‌ریزی شخصی</span>
+                        <h1>بودجه شخصی</h1>
+                        <p>هزینه‌های ماهانه خود را کنترل کنید و برای روزهای باقی‌مانده برنامه داشته باشید.</p>
+                    </div>
+                </section>
+
+                <section class="grid cards-3">
+                    <article class="kpi">
+                        <span class="muted">بودجه ماه</span>
+                        <h2 data-kpi="budget-total">{{ total_budget }}</h2>
+                        <small>سقف تعیین‌شده</small>
+                    </article>
+                    <article class="kpi">
+                        <span class="muted">مصرف‌شده</span>
+                        <h2 data-kpi="budget-spent">{{ spent_total }}</h2>
+                        <small class="warning">در حال استفاده</small>
+                    </article>
+                    <article class="kpi">
+                        <span class="muted">باقی‌مانده</span>
+                        <h2 data-kpi="budget-remaining">{{ remaining_budget }}</h2>
+                        <small class="positive">قابل استفاده</small>
+                    </article>
+                </section>
+
+                <section class="panel">
+                    <div class="panel-head">
+                        <div>
+                            <h2>وضعیت بودجه شخصی</h2>
+                            <span class="muted">مصرف فعلی نسبت به سقف ماهانه</span>
+                        </div>
+                        <span class="badge warning {% if percent >= 85 %}danger{% endif %}" data-kpi="budget-percent">{{ percent }}% مصرف شده</span>
+                    </div>
+                    <div class="progress large">
+                        <div class="progress-bar" id="budget-progress" style="width: {{ percent }}%;"></div>
+                    </div>
+                    <p class="muted">اگر سرعت مصرف افزایش پیدا کند، تراز پیشنهاد می‌کند هزینه‌های غیرضروری را برای روزهای پایانی ماه محدود کنید.</p>
+                </section>
+
+                <section class="grid cards-2">
+                    <article class="panel">
+                        <h2>دسته‌بندی هزینه‌ها</h2>
+                        <div id="budget-categories">
+                            {% if categories_data %}
+                                <ul style="list-style: none; padding: 0; margin: 0;">
+                                    {% for cat in categories_data %}
+                                        <li style="margin-bottom: 16px; border-bottom: 1px solid #eee; padding-bottom: 12px;">
+                                            <div style="display: flex; justify-content: space-between; margin-bottom: 6px;">
+                                                <strong>{{ cat.name }}</strong>
+                                                <span class="muted">{{ cat.spent }} تومان</span>
+                                            </div>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar" style="width: {{cat.precent}}%;"></div>
+                                            </div>
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <p class="muted">هیچ هزینه ای با دسته بندی در این ماه ثبت نشده است.</p>
+                            {% endif %}
+                        </div>
+                    </article>
+                    <article class="panel">
+                        <h2>پیشنهاد تراز</h2>
+                        <div id="budget-advice">
+                            {% if percent >= 85 %}
+                                <div class="insight warning-box">
+                                    ⚠️ {{ remaining_percent }}٪ از بودجه باقی مانده است. در این شرایط، هزینه‌های غیرضروری را با دقت بیشتری کنترل کنید.
+                                </div>
+                            {% else %}
+                                <div class="insight">
+                                    🎯 وضعیت بودجه متعادل است. با ادامه همین روند، فضای مناسبی برای هزینه‌های پیش‌بینی‌نشده خواهید داشت.
+                                </div>
+                            {% endif %}
+                        </div>
+                    </article>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+    <div class="toast" id="toast" role="status"></div>
+{% endblock %}
+{% block extra_js %}
+    <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/chart.umd.min.js' %}"></script>
+{% endblock %}
